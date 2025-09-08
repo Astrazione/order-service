@@ -67,7 +67,7 @@ func main() {
 			return
 		}
 
-		// попытка получить из кэша
+		// попытка получить данные о заказе из кэша
 		order, success := cache.Get(uid)
 		if !success {
 			order, err = order_db.GetOrderByUID(uid)
