@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Order Service</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; }
+        input, button { padding: 10px; margin: 5px; }
+        #result { margin-top: 20px; padding: 15px; border: 1px solid #ddd; }
+    </style>
+</head>
+<body>
+    <h1>Order Search</h1>
+    <input type="text" id="orderId" placeholder="Enter Order UID">
+    <button onclick="getOrder()">Get Order</button>
+    
+    <div id="result"></div>
+
+    <script>
+        function getOrder() {
+            const orderId = document.getElementById('orderId').value;
+            if (!orderId) {
+                alert('Please enter Order UID');
+                return;
+            }
+
+            fetch(`/order/${orderId}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Order not found');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    document.getElementById('result').innerHTML = 
+                        `<pre>${JSON.stringify(data, null, 2)}</pre>`;
+                })
+                .catch(error => {
+                    document.getElementById('result').innerHTML = 
+                        `<p style="color: red;">Error: ${error.message}</p>`;
+                });
+        }
+    </script>
+</body>
+</html>
