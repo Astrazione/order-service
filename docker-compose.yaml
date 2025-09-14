@@ -4,14 +4,14 @@ services:
     image: postgres:17
     container_name: postgres_db
     environment:
-      POSTGRES_DB: order_db
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
     ports:
-      - "5432:5432"
+      - "${DB_PORT}:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./configs/docker/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./configs/docker/db_init:/docker-entrypoint-initdb.d
     networks:
       - order-network
     restart: unless-stopped
@@ -25,7 +25,7 @@ services:
     image: bitnami/kafka:4.0.0
     container_name: kafka_broker
     ports:
-      - "9092:9093"
+      - "${KAFKA_PORT}:9093"
     environment:
       - KAFKA_ENABLE_KRAFT=yes
       - KAFKA_CFG_PROCESS_ROLES=broker,controller
@@ -53,11 +53,11 @@ services:
       build: .
       container_name: order_service
       environment:
-        - DB_CONN_STR=postgres://postgres:postgres@postgres:5432/order_db?sslmode=disable
+        - DB_CONN_STR=postgres://${DB_USER}:${DB_PASSWORD}@postgres:5432/${DB_NAME}?sslmode=disable
         - KAFKA_BROKERS=kafka:9092
         - KAFKA_TOPIC=orders
       ports:
-        - "8080:8080"
+        - "${SERVICE_PORT}:8080"
       depends_on:
         postgres:
           condition: service_healthy

@@ -18,6 +18,7 @@ func NewPostgresStorage(connStr string) (*PostgresStorage, error) {
 		return nil, err
 	}
 	if err = db.Ping(); err != nil {
+		_ = db.Close()
 		return nil, err
 	}
 	return &PostgresStorage{db: db}, nil
